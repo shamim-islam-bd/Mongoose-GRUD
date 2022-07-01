@@ -30,52 +30,13 @@ router.post("/signup", async (req, res)=>{
 
 });
 
-//Login 
-// router.post("/login", async(req, res) => {
-//     try {
-//         const user = await User.find({ username: req.body.username });
-//         console.log(user);
-//         if(user && user.length > 0){
-//             const isValiedPassword = await bcrypt.compare(req.body.password, user[0].password);
-//              console.log(isValiedPassword);
-//             if(isValiedPassword){
-//               //generate token.
-//              const token = jwt.sign({
-//                 username: req.body.username,
-//                 userId: user[0]._id,
-//                }, process.env.JWT_SECRET, {
-//                  expiresIn: '1h'
-//                 });
-               
-//                 res.status(200).json({
-//                     'access-token': token,
-//                     'message': "Login successfully!",
-//                 });
 
-//             }else{
-//                 res.status(401).json({
-//                     "error" : "Authetication failed!"
-//                 })
-//             }
-           
-//         } else{
-//             res.status(401).json({
-//                 "error" : "Authetication failed!"
-//             })
-//         }
-//     } catch (error) {
-//         res.status(401).json({
-//             "error" : "Authetication failed!"
-//         })
-//     }
-// })
-
-
-
+//Login
 router.post("/login", async(req, res) => {
     try {
+        // console.log("User den", req.body.username );
         const user = await User.find({ username: req.body.username });
-        console.log(user);
+        // console.log("getting User", user);
         if(user && user.length > 0) {
             const isValidPassword = await bcrypt.compare(req.body.password, user[0].password);
 
@@ -109,6 +70,24 @@ router.post("/login", async(req, res) => {
     }
 });
 
+// GET ALL USERS
+router.get('/all', async (req, res) => {
+    try {
+        const users = await User.find({
+            status: 'active'
+        }).populate("todos");
+
+        res.status(200).json({
+            data: users,
+            message: "Success"
+        });
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({
+            message: "There was an error on the server side!"
+        });
+    }
+});
 
 
 module.exports = router;
